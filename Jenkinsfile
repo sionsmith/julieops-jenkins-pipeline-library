@@ -18,12 +18,12 @@ pipeline {
         ALLOW_TOPIC_DELETE = true
     }
     stages {
-        stage('check out schemas') {
-            steps {
-                sh 'git clone --branch main https://github.com/sionsmith/demo-platform-kafka-schemas.git '
-            }
-
-        }
+//        stage('check out schemas') {
+//            steps {
+//                sh 'git clone --branch main https://github.com/sionsmith/demo-platform-kafka-schemas.git '
+//            }
+//
+//        }
         stage('verify-replication-factor') {
             steps {
                 sh 'checks/verify-replication-factor.sh ${TopologyFiles} 1'
