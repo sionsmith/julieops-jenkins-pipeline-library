@@ -80,7 +80,7 @@ pipeline {
                 writeFile file: 'topology-builder.properties', text: [
                         'sasl.mechanism=OAUTHBEARER',
                         'security.protocol=SASL_PLAINTEXT',
-                        'sasl.jaas.config=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username=\"${MDS_USERNAME}\" password=\"${MDS_PASSWORD}\" metadataServerUrls=\"${MDS_URL}\";',
+                        'sasl.jaas.config=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username="${MDS_USERNAME}" password="${MDS_PASSWORD}" metadataServerUrls=\"${MDS_URL}\";',
                         'sasl.login.callback.handler.class=io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler',
                         'topology.builder.access.control.class=com.purbon.kafka.topology.roles.RBACProvider',
                         'topology.builder.mds.server=$MDS_URL',
