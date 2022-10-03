@@ -26,6 +26,7 @@ pipeline {
 //        }
         stage('verify-replication-factor') {
             steps {
+                sh 'ls'
                 sh 'checks/verify-replication-factor.sh ${TopologyFiles} 1'
             }
         }
