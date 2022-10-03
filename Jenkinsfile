@@ -8,7 +8,7 @@ pipeline {
     }
     environment {
         env = "${env.BRANCH_NAME}"
-        TopologyFiles = "topologies/${env}-descriptor.yaml"
+        TopologyFiles = "topologies/descriptor.yaml"
         Brokers = "broker:10091"
         MDS_URL = "http://broker:8091"
         MDS_USERNAME = "mds"
