@@ -1,7 +1,26 @@
 def confirmDeployment
 
-def buildConnectionFile(){
+final KAFKA_ADMIN_TEMPLATE = '''
+sasl.mechanism=OAUTHBEARER
+security.protocol=SASL_PLAINTEXT
+sasl.jaas.config=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username="${MDS_USERNAME}" password="${MDS_PASSWORD}" metadataServerUrls="${MDS_URL}";
+sasl.login.callback.handler.class=io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler
+topology.builder.access.control.class=com.purbon.kafka.topology.roles.RBACProvider
+topology.builder.mds.server=$(MDS_URL}
+topology.builder.mds.user=${MDS_USERNAME}
+topology.builder.mds.password=${MDS_PASSWORD}
+topology.builder.mds.kafka.cluster.id=${KAFKA_CLUSER_ID}
+schema.registry.url=${SCHEMA_REGISTRY_URL}
+schema.registry.basic.auth.user.info=$MDS_USERNAME:${MDS_PASSWORD}
+basic.auth.credentials.source=USER_INFO
+topology.builder.mds.schema.registry.cluster.id=schema-registry
+topology.builder.mds.kafka.connect.cluster.id=connect-cluster
+topology.builder.mds.ksqldb.cluster.id=ksql-cluster
+topology.topic.prefix.separator=-
+'''
 
+def renderTemplate(template, bindings) {
+    bindings.inject(template) { t, k, v -> t.replace("\${" + k + "}", v) }
 }
 
 pipeline {
@@ -77,25 +96,13 @@ pipeline {
 
         stage('dry-run') {
             steps {
-                writeFile file: 'topology-builder.properties', text: [
-                        'sasl.mechanism=OAUTHBEARER',
-                        'security.protocol=SASL_PLAINTEXT',
-                        'sasl.jaas.config=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username="${MDS_USERNAME}" password="${MDS_PASSWORD}" metadataServerUrls=\"${MDS_URL}\";',
-                        'sasl.login.callback.handler.class=io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler',
-                        'topology.builder.access.control.class=com.purbon.kafka.topology.roles.RBACProvider',
-                        'topology.builder.mds.server=$MDS_URL',
-                        'topology.builder.mds.user=$MDS_USERNAME',
-                        'topology.builder.mds.password=$MDS_PASSWORD',
-                        'topology.builder.mds.kafka.cluster.id=$KAFKA_CLUSER_ID',
-                        'schema.registry.url=$SCHEMA_REGISTRY_URL',
-                        'schema.registry.basic.auth.user.info=$MDS_USERNAME:$MDS_PASSWORD',
-                        'basic.auth.credentials.source=USER_INFO',
-                        'topology.builder.mds.schema.registry.cluster.id=schema-registry',
-                        'topology.builder.mds.kafka.connect.cluster.id=connect-cluster',
-                        'topology.builder.mds.ksqldb.cluster.id=ksql-cluster',
-                        'topology.topic.prefix.separator=-'
-                ].join("\n")
-
+                writeFile file: 'topology-builder.properties', text: renderTemplate(KAFKA_ADMIN_TEMPLATE, [
+                        'MDS_USERNAME': env.MDS_USERNAME,
+                        'MDS_PASSWORD': env.MDS_PASSWORD,
+                        'MDS_URL': env.MDS_URL,
+                        'KAFKA_CLUSER_ID': env.KAFKA_CLUSER_ID,
+                        'SCHEMA_REGISTRY_URL': env.SCHEMA_REGISTRY_URL]
+                )
                 sh 'cat topology-builder.properties'
                 sh 'java -jar /app/julie-ops.jar --brokers ${Brokers} --clientConfig topology-builder.properties --topology ${TopologyFiles} --dryRun'
             }
