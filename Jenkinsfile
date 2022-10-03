@@ -26,13 +26,49 @@ pipeline {
 //        }
         stage('verify-replication-factor') {
             steps {
-                sh 'ls'
-                sh 'checks/verify-replication-factor.sh ${TopologyFiles} 1'
+                sh '''#!/bin/bash
+                        verify-replication-factor(){
+                            FILE=$1
+                            REQUIRED_FACTOR=$2
+                            required=`cat $FILE | grep replication.factor | wc -l`
+                            matches=`cat $FILE | grep replication.factor | grep $REQUIRED_FACTOR | wc -l`
+                        
+                            if [ "$matches" -ne "$required" ] ;
+                            then
+                               echo -e "Some topics have not the expected replication factor, please review"
+                               exit 1
+                            elif [ "$matches" -eq "$required" ]  ;
+                            then
+                               echo -e "All topics have the required replication factor"
+                               exit 0
+                            fi
+                        }
+                        verify-replication-factor ${TopologyFiles} 1
+                '''
             }
         }
         stage('verify-num-of-partitions') {
             steps {
-                sh 'checks/verify-num-of-partitions.sh ${TopologyFiles} 1'
+                sh '''#!/bin/bash
+                        verify-num-of-partitions(){
+                            FILE=$1
+                            REQUIRED_FACTOR=$2
+                            
+                            required=`cat $FILE | grep num.partitions | wc -l`
+                            matches=`cat $FILE | grep num.partitions | grep $REQUIRED_FACTOR | wc -l`
+                            
+                            if [ "$matches" -ne "$required" ] ;
+                            then
+                               echo -e "Some topics have not the expected num of partitions, please review"
+                               exit 1
+                            elif [ "$matches" -eq "$required" ]  ;
+                            then
+                               echo -e "All topics have the required num of partitions"
+                               exit 0
+                            fi
+                        }
+                        verify-num-of-partitions ${TopologyFiles} 1
+                '''
             }
         }
 
