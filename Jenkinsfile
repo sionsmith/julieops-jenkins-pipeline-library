@@ -11,7 +11,7 @@ topology.builder.mds.user=${MDS_USERNAME}
 topology.builder.mds.password=${MDS_PASSWORD}
 topology.builder.mds.kafka.cluster.id=${KAFKA_CLUSER_ID}
 schema.registry.url=${SCHEMA_REGISTRY_URL}
-schema.registry.basic.auth.user.info=$MDS_USERNAME:${MDS_PASSWORD}
+schema.registry.basic.auth.user.info=${MDS_USERNAME}:${MDS_PASSWORD}
 basic.auth.credentials.source=USER_INFO
 topology.builder.mds.schema.registry.cluster.id=schema-registry
 topology.builder.mds.kafka.connect.cluster.id=connect-cluster
@@ -29,7 +29,7 @@ pipeline {
         disableConcurrentBuilds()
     }
     environment {
-        env = "${env.BRANCH_NAME}"
+        env = "BLD"
         TopologyFiles = "topologies/descriptor.yaml"
         Brokers = "broker:10091"
         MDS_URL = "http://broker:8091"
@@ -93,6 +93,19 @@ pipeline {
                 '''
             }
         }
+        stage('validate-role-bindings') {
+            steps {
+                sh '''#!/bin/bash
+                        validate-role-bindings(){
+                            FILE=$1
+                            
+                            resourceOwner=`cat $FILE | grep ResourceOwner | wc -l`
+                            securityAdmin=`cat $FILE | grep SecurityAdmin | wc -l`
+                        }
+                        validate-role-bindings ${TopologyFiles}
+                '''
+            }
+        }
 
         stage('dry-run') {
             steps {
@@ -103,7 +116,6 @@ pipeline {
                         'KAFKA_CLUSER_ID': env.KAFKA_CLUSER_ID,
                         'SCHEMA_REGISTRY_URL': env.SCHEMA_REGISTRY_URL]
                 )
-                sh 'cat topology-builder.properties'
                 sh 'java -jar /app/julie-ops.jar --brokers ${Brokers} --clientConfig topology-builder.properties --topology ${TopologyFiles} --dryRun'
             }
         }
