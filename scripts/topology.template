@@ -16,3 +16,4 @@ topology.builder.mds.ksqldb.cluster.id=ksql-cluster
 topology.topic.prefix.separator=-
 
 https://github.com/vnyb/jinja2-render/blob/3565b80cd3ecad938e1ccecff08bedcb56a00cd9/jinja2_render.py
+https://github.com/splunk/kafka-connect-splunk/blob/6310b4628b01ddce5e855102814cec8beb954895/test/lib/connector.template
