@@ -1,0 +1,18 @@
+sasl.mechanism=OAUTHBEARER
+security.protocol=SASL_PLAINTEXT
+sasl.jaas.config=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username="{{ MDS_USERNAME }}" password="{{MDS_PASSWORD}}" metadataServerUrls="{{MDS_URL}}";
+sasl.login.callback.handler.class=io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler
+topology.builder.access.control.class=com.purbon.kafka.topology.roles.RBACProvider
+topology.builder.mds.server=$(MDS_URL}}
+topology.builder.mds.user={{MDS_USERNAME}}
+topology.builder.mds.password={{MDS_PASSWORD}}
+topology.builder.mds.kafka.cluster.id={{KAFKA_CLUSER_ID}}
+schema.registry.url={{SCHEMA_REGISTRY_URL}}
+schema.registry.basic.auth.user.info={{MDS_USERNAME}}:{{MDS_PASSWORD}}
+basic.auth.credentials.source=USER_INFO
+topology.builder.mds.schema.registry.cluster.id=schema-registry
+topology.builder.mds.kafka.connect.cluster.id=connect-cluster
+topology.builder.mds.ksqldb.cluster.id=ksql-cluster
+topology.topic.prefix.separator=-
+
+https://github.com/vnyb/jinja2-render/blob/3565b80cd3ecad938e1ccecff08bedcb56a00cd9/jinja2_render.py
