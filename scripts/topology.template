@@ -1,9 +1,9 @@
 sasl.mechanism=OAUTHBEARER
 security.protocol=SASL_PLAINTEXT
-sasl.jaas.config=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username="{{ MDS_USERNAME }}" password="{{ MDS_PASSWORD }}" metadataServerUrls="{{MDS_URL}}";
+sasl.jaas.config=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username="{{ MDS_USERNAME }}" password="{{ MDS_PASSWORD }}" metadataServerUrls="{{ MDS_URL }}";
 sasl.login.callback.handler.class=io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler
 topology.builder.access.control.class=com.purbon.kafka.topology.roles.RBACProvider
-topology.builder.mds.server={( MDS_URL }}
+topology.builder.mds.server={{ MDS_URL }}
 topology.builder.mds.user={{ MDS_USERNAME }}
 topology.builder.mds.password={{ MDS_PASSWORD }}
 topology.builder.mds.kafka.cluster.id={{ KAFKA_CLUSER_ID }}
@@ -15,12 +15,15 @@ topology.builder.mds.kafka.connect.cluster.id={{ CONNECT_CLUSTER_ID }}
 topology.builder.mds.ksqldb.cluster.id={{ KSQL_CLUSTER_ID }}
 topology.topic.prefix.separator=-
 topology.project.prefix.format=
-topology.topic.prefix.format={{context}}-{{topic}}
-julie.instance.id=julieops
-julie.kafka.config.topic=${TENANT_STATE_TOPIC_NAME}
+{% raw %}topology.topic.prefix.format={{context}}-{{topic}}{% endraw %}
+
+julie.instance.id=julieops_{{ TENANT_ID }}
+julie.kafka.config.topic={{ TENANT_STATE_TOPIC_NAME }}
 topology.builder.state.processor.class=com.purbon.kafka.topology.backend.KafkaBackend
 allow.delete.topics=true
-topology.topic.managed.prefixes.0=${MANAGED_PREFIX_0}
+{% for element in MANAGED_PREFIXES %}
+topology.topic.managed.prefixes.{{ loop.index0 }}={{ element }}
+{% endfor %}
 julie.verify.remote.state=true
-julie.roles=custom-roles/role-bindings.yaml
+julie.roles={{ ROLES_FILE }}
 allow.delete.bindings=true
