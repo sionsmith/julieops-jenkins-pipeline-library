@@ -20,11 +20,14 @@ def generate_content():
         KSQL_CLUSTER_ID=args.ksql_cluster_id,
         TENANT_STATE_TOPIC_NAME=args.tenant_state_topic,
         MANAGED_PREFIXES=args.managed_topics_list,
+        MANAGED_PREFIXES_LEN=len(args.managed_topics_list),
         ROLES_FILE=args.custom_roles_file
     )
 
     print(export)
-    return export
+    f = open("topology-builder.properties", "w")
+    f.write(export)
+    f.close()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

@@ -21,6 +21,9 @@ julie.instance.id=julieops_{{ TENANT_ID }}
 julie.kafka.config.topic={{ TENANT_STATE_TOPIC_NAME }}
 topology.builder.state.processor.class=com.purbon.kafka.topology.backend.KafkaBackend
 allow.delete.topics=true
+{% if MANAGED_PREFIXES_LEN > 1 %}
+julie.multiple.context.per.dir.enabled=true
+{% endif %}
 {% for element in MANAGED_PREFIXES %}
 topology.topic.managed.prefixes.{{ loop.index0 }}={{ element }}
 {% endfor %}
