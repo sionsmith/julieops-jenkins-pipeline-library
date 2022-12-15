@@ -19,6 +19,7 @@ def generate_content():
         CONNECT_CLUSTER_ID=args.connect_cluster_id,
         KSQL_CLUSTER_ID=args.ksql_cluster_id,
         TENANT_STATE_TOPIC_NAME=args.tenant_state_topic,
+        TOPIC_FORMAT=args.topic_format,
         MANAGED_PREFIXES=args.managed_topics_list,
         MANAGED_PREFIXES_LEN=len(args.managed_topics_list),
         ROLES_FILE=args.custom_roles_file
@@ -99,6 +100,12 @@ if __name__ == "__main__":
         type=str,
         default='custom-roles/role-bindings.yaml',
         help='Filename of custom roles'
+    )
+    parser.add_argument(
+        '--topic-format',
+        type=str,
+        default='{{context}}-{{topic}}',
+        help='Format for topics names'
     )
     args = parser.parse_args()
     generate_content()

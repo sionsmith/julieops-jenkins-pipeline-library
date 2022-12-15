@@ -15,8 +15,7 @@ topology.builder.mds.kafka.connect.cluster.id={{ CONNECT_CLUSTER_ID }}
 topology.builder.mds.ksqldb.cluster.id={{ KSQL_CLUSTER_ID }}
 topology.topic.prefix.separator=-
 topology.project.prefix.format=
-{% raw %}topology.topic.prefix.format={{context}}-{{topic}}{% endraw %}
-
+topology.topic.prefix.format={{ TOPIC_FORMAT }}
 julie.instance.id=julieops_{{ TENANT_ID }}
 julie.kafka.config.topic={{ TENANT_STATE_TOPIC_NAME }}
 topology.builder.state.processor.class=com.purbon.kafka.topology.backend.KafkaBackend
